@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Mashup Creator with Spotify</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #1DB954;
+    }
+    .container {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 600px;
+    }
+    label, input, button, select {
+      display: block;
+      width: 100%;
+      margin: 1rem 0;
+    }
+    input, button, select {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: none;
+    }
+    button {
+      background-color: #1DB954;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    audio {
+      margin-top: 1rem;
+      width: 100%;
+    }
+    .mashups {
+      margin-top: 3rem;
+    }
+    .mashups h2 {
+      color: #90ee90;
+    }
+    ul {
+      padding-left: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎶 Mashup Creator (Spotify Enabled)</h1>
+  <div class="container">
+    <button onclick="authenticateSpotify()">Connect with Spotify</button>
+
+    <label for="vocalTrack">Search Vocal Track</label>
+    <input type="text" id="vocalTrack" placeholder="e.g. King Von - Armed and Dangerous">
+    <button onclick="searchTrack('vocal')">Search Vocals</button>
+
+    <label for="beatTrack">Search Beat Track</label>
+    <input type="text" id="beatTrack" placeholder="e.g. Bruno Mars - The Lazy Song">
+    <button onclick="searchTrack('beat')">Search Beat</button>
+
+    <div id="preview"></div>
+  </div>
+
+  <div class="mashups">
+    <h2>🔥 Suggested Unique Mashups</h2>
+    <ul>
+      <li>King Von – Armed and Dangerous × Bruno Mars – The Lazy Song</li>
+      <li>Lil Nas X – Panini × MGMT – Electric Feel</li>
+      <li>Doja Cat – Woman × Foster the People – Pumped Up Kicks</li>
+      <li>Kendrick Lamar – DNA × Queen – Another One Bites the Dust</li>
+      <li>Post Malone – Circles × Coldplay – Viva La Vida</li>
+      <li>Travis Scott – Sicko Mode × Daft Punk – Around the World</li>
+      <li>Ice Spice – Munch × Justin Timberlake – Rock Your Body</li>
+      <li>Tyler, The Creator – EARFQUAKE × Bee Gees – Stayin' Alive</li>
+      <li>Megan Thee Stallion – Body × Earth, Wind & Fire – September</li>
+      <li>Drake – Nice for What × Mark Ronson – Uptown Funk</li>
+    </ul>
+  </div>
+
+  <script>
+    let accessToken = "";
+
+    function authenticateSpotify() {
+      const clientId = 'YOUR_SPOTIFY_CLIENT_ID';
+      const redirectUri = window.location.href;
+      const scope = 'user-read-private user-read-email';
+      window.location.href = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+    }
+
+    window.onload = () => {
+      if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        accessToken = params.get("access_token");
+      }
+    }
+
+    function searchTrack(type) {
+      const query = document.getElementById(type + "Track").value;
+      fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const track = data.tracks.items[0];
+        if (track) {
+          document.getElementById("preview").innerHTML += `<p><strong>${type}:</strong> ${track.name} by ${track.artists[0].name}</p>`;
+        } else {
+          alert("Track not found on Spotify.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
