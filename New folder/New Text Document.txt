@@ -92,7 +92,7 @@
     let accessToken = "";
 
     function authenticateSpotify() {
-      const clientId = 'YOUR_SPOTIFY_CLIENT_ID';
+      const clientId = '85cd87797f3e474197d192a832c78fe2';
       const redirectUri = window.location.href;
       const scope = 'user-read-private user-read-email';
       window.location.href = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
